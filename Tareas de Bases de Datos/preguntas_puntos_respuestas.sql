@@ -35,14 +35,13 @@ VALOR (1 PUNTO)
 */
 /*******************************SOLUCION************************************************/
 select
-	primer_apellido,
+    primer_apellido,
     segundo_apellido,
-	profesor.nombre,
+    profesor.nombre,
     area.nombre as area
 from profesor
 join area on area_id_area = id_area
 order by primer_apellido;
-    
 /***************************************************************************************/
 
 /*Mostrar nombre,primer pellido y segundo apellido del profesor
@@ -52,7 +51,7 @@ VALOR (2 PUNTOS)
 */
 /*******************************SOLUCION************************************************/
 select
-	profesor.nombre,
+    profesor.nombre,
     primer_apellido,
     segundo_apellido,
     rol,
@@ -75,17 +74,17 @@ WHERE profesor_proyecto_investigacion.profesor_numero_economico = '1234';
 
 /*******************************SOLUCION************************************************/
 select
-	/*profesor.nombre,
+    /*profesor.nombre,
     primer_apellido,
     segundo_apellido,
     rol,*/
     proyecto_investigacion.nombre as proyecto
 from profesor
 join profesor_proyecto_investigacion on
-	numero_economico = profesor_numero_economico
+    numero_economico = profesor_numero_economico
     and rol = 'Participante'
 join proyecto_investigacion on
-	id_proyecto_investigacion = proyecto_investigacion_id_proyecto_investigacion
+    id_proyecto_investigacion = proyecto_investigacion_id_proyecto_investigacion
 where numero_economico = '1234'
 order by primer_apellido;
 /***************************************************************************************/
@@ -97,14 +96,14 @@ responsable del proyecto de investigación con clave = 9
 */
 /*******************************SOLUCION************************************************/
 select
-	profesor.nombre,
+    profesor.nombre,
     primer_apellido,
     segundo_apellido,
     area.nombre as area
 from profesor
 join area on area_id_area = id_area
 join profesor_proyecto_investigacion 
-	on numero_economico = profesor_numero_economico
+    on numero_economico = profesor_numero_economico
     and rol = 'Responsable'
 join proyecto_investigacion on id_proyecto_investigacion = proyecto_investigacion_id_proyecto_investigacion
 where id_proyecto_investigacion = 9;
@@ -125,7 +124,7 @@ select
 from profesor
 join area on area_id_area = id_area
 join profesor_proyecto_investigacion 
-	on numero_economico = profesor_numero_economico
+    on numero_economico = profesor_numero_economico
     and rol = 'Responsable'
 join proyecto_investigacion on id_proyecto_investigacion = proyecto_investigacion_id_proyecto_investigacion
 order by primer_apellido;
@@ -144,7 +143,7 @@ select
 from profesor
 join area on area_id_area = id_area
 join profesor_proyecto_investigacion 
-	on numero_economico = profesor_numero_economico
+    on numero_economico = profesor_numero_economico
     and rol = 'Responsable'
 join proyecto_investigacion on id_proyecto_investigacion = proyecto_investigacion_id_proyecto_investigacion
 where profesor.area_id_area = 3
