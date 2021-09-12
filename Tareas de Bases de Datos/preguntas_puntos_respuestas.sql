@@ -22,8 +22,8 @@ VALOR (1 PUNTO)
 */
 /*******************************SOLUCION************************************************/
 select
-	proyecto_investigacion.nombre as proyecto,
-	area.nombre as area
+    proyecto_investigacion.nombre as proyecto,
+    area.nombre as area
 from proyecto_investigacion
 join area on id_area = area_id_area;
 /***************************************************************************************/
