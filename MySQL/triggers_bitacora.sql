@@ -17,6 +17,8 @@ CREATE TABLE `bitacora` (
   `fecha` datetime,
   `executedSQL` varchar(2000) DEFAULT NULL,
   `reverseSQL` varchar(2000) DEFAULT NULL,
+  -- Registra quien fue el usuario ejecuto la accion: INSERT, UPDATE, DELETE
+  `log_user` varchar(350) DEFAULT NULL,
   PRIMARY KEY (`idbitacora`)
 );
 
@@ -26,13 +28,14 @@ CREATE TRIGGER after_insert_alumnos
  AFTER INSERT ON alumnos
  FOR EACH ROW
 BEGIN
- insert into bitacora ( fecha, executedSQL, reverseSQL )
+ insert into bitacora ( fecha, executedSQL, reverseSQL, log_user )
 	values(
-    now(),
+    now(),-- fecha, es obtenida con la funcion 'now()'
     -- La funcion CONCAT, junta dos valores como una cadena de caracteres.
     -- construyendo el SQL que elimina el registro recien insertado
     CONCAT("INSERT INTO alumnos (idalumnos, Nombre, Apellido, Calificacion) VALUES (",NEW.idalumnos,", """,NEW.Nombre,""", """,NEW.Apellido,""", ",NEW.Calificacion,");"),
-    CONCAT("DELETE FROM alumnos WHERE idalumnos = ",  NEW.idalumnos,";")
+    CONCAT("DELETE FROM alumnos WHERE idalumnos = ",  NEW.idalumnos,";"),
+    CURRENT_USER()
 );
 END;
 $$
@@ -45,13 +48,14 @@ CREATE TRIGGER after_delete_alumnos
  AFTER DELETE ON alumnos
  FOR EACH ROW
 BEGIN
- insert into bitacora( fecha, executedSQL, reverseSQL )
+ insert into bitacora( fecha, executedSQL, reverseSQL, log_user )
 values(
 	now(),
     -- La funcion CONCAT, junta dos valores como una cadena de caracteres.
     -- construyendo el SQL que elimina el registro recien insertado
     CONCAT("DELETE FROM alumnos WHERE idalumnos = ",OLD.idalumnos,";"),
-    CONCAT("INSERT INTO alumnos (idalumnos, Nombre, Apellido, Calificacion) VALUES (",OLD.idalumnos,", """,OLD.Nombre,""", """,OLD.Apellido,""", ",OLD.Calificacion,");")
+    CONCAT("INSERT INTO alumnos (idalumnos, Nombre, Apellido, Calificacion) VALUES (",OLD.idalumnos,", """,OLD.Nombre,""", """,OLD.Apellido,""", ",OLD.Calificacion,");"),
+    CURRENT_USER()
 );
 END;
 $$
@@ -64,13 +68,14 @@ CREATE TRIGGER after_update_alumnos
  AFTER UPDATE ON alumnos
  FOR EACH ROW
 BEGIN
- insert into bitacora( fecha, executedSQL, reverseSQL)
+ insert into bitacora( fecha, executedSQL, reverseSQL, log_user )
 values(   
     now(),
     -- La funcion CONCAT, junta dos valores como una cadena de caracteres.
     -- construyendo el SQL que elimina el registro recien insertado
     CONCAT("UPDATE alumnos SET idalumnos = ",NEW.idalumnos,", Nombre = """,NEW.Nombre,""", Apellido = """,NEW.Apellido,""", Calificacion = ",NEW.Calificacion," WHERE idalumnos = ", OLD.idalumnos,";"),
-    CONCAT("UPDATE alumnos SET idalumnos = ",OLD.idalumnos,", Nombre = """,OLD.Nombre,""", Apellido = """,OLD.Apellido,""", Calificacion = ",OLD.Calificacion," WHERE idalumnos = ", NEW.idalumnos,";")
+    CONCAT("UPDATE alumnos SET idalumnos = ",OLD.idalumnos,", Nombre = """,OLD.Nombre,""", Apellido = """,OLD.Apellido,""", Calificacion = ",OLD.Calificacion," WHERE idalumnos = ", NEW.idalumnos,";"),
+    CURRENT_USER()
 );
 END;
 $$
