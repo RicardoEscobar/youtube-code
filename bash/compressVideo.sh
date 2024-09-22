@@ -26,19 +26,13 @@
 
 # Author: jorge.ricardo.escobar@gmail.com
 # Created: 2022-07-31 16:38:22
-# Last Modified: 2022-07-31 19:10:58
+# Last Modified: 2024-00-21 18:34:00
 
 # make the script run even if you close the terminal window or session.
 $0 < /dev/null &> /dev/null & disown
 # exit 0
 
 # do stuff here
-
-LINE="$1"
-INPUTFILE="$(basename -- "$LINE")" # Video file to compress.
-OUTPUTFILE="compressed_$(basename "$INPUTFILE")" # Compressed video file.
-DIRECTORY="$(readlink -f "$LINE")" # Full path and name to input video file.
-DIRECTORY="$(dirname "$DIRECTORY")" # Path to input video file.
 
 function usage () { # Function: Print a help message.
   echo "Usage: $0 /input/video.mkv" 1>&2 
@@ -53,4 +47,33 @@ function compressVideo () { # Compresses video file.
     ffmpeg -hide_banner -loglevel error -nostdin -n -i "${DIRECTORY}/${INPUTFILE}" -vcodec libx265 -x265-params log-level=error -crf 24 "${DIRECTORY}/${OUTPUTFILE}" >> results.log &   
 }
 
-compressVideo
+function compress_dir () { # Compresses all video files in a directory.
+    for file in "${DIRECTORY}"/*; do
+        if [ -f "$file" ]; then
+            INPUTFILE="$(basename -- "$file")" # Video file to compress.
+            OUTPUTFILE="compressed_$(basename "$INPUTFILE")" # Compressed video file.
+            compressVideo
+        fi
+    done
+}
+
+LINE="$1"
+
+# Check if the input is a directory or a file.
+if [ -d "$LINE" ]; then
+    echo "Directory: $LINE"
+    DIRECTORY="$(readlink -f "$LINE")" # Full path and name to input video file.
+    compress_dir
+    exit 0
+elif [ -f "$LINE" ]; then
+    echo "File: $LINE"
+    DIRECTORY="$(dirname "$LINE")" # Full path and name to input video file.
+    INPUTFILE="$(basename -- "$LINE")" # Video file to compress.
+    OUTPUTFILE="compressed_$(basename "$INPUTFILE")" # Compressed video file.
+    compressVideo
+else
+    echo "Not a valid file or directory."
+    exit_abnormal
+fi
+
+exit 0
